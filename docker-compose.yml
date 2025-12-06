@@ -1,0 +1,89 @@
+version: '3.8'
+
+services:
+  # PostgreSQL Database
+  postgres:
+    image: postgres:15-alpine
+    container_name: speedometer-db
+    environment:
+      POSTGRES_DB: ${DB_NAME:-speedometer_db}
+      POSTGRES_USER: ${DB_USER:-speedometer_user}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-speedometer_password}
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./backend/db/migrations:/docker-entrypoint-initdb.d
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-speedometer_user} -d ${DB_NAME:-speedometer_db}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - speedometer-network
+
+  # Backend API Server
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: speedometer-backend
+    environment:
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_NAME: ${DB_NAME:-speedometer_db}
+      DB_USER: ${DB_USER:-speedometer_user}
+      DB_PASSWORD: ${DB_PASSWORD:-speedometer_password}
+      PORT: 3001
+      NODE_ENV: production
+      FRONTEND_URL: http://localhost:3000
+      MIN_SPEED: ${MIN_SPEED:-0}
+      MAX_SPEED: ${MAX_SPEED:-120}
+      SPEED_VARIATION: ${SPEED_VARIATION:-5}
+    ports:
+      - "3001:3001"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "node", "-e", "require('http').get('http://localhost:3001/health', (r) => {process.exit(r.statusCode === 200 ? 0 : 1)})"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    networks:
+      - speedometer-network
+    restart: unless-stopped
+
+  # Frontend React Application
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      args:
+        REACT_APP_API_URL: http://localhost:3001
+        REACT_APP_WS_URL: http://localhost:3001
+    container_name: speedometer-frontend
+    ports:
+      - "3000:80"
+    depends_on:
+      - backend
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:80/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+    networks:
+      - speedometer-network
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
+    driver: local
+
+networks:
+  speedometer-network:
+    driver: bridge
+
+

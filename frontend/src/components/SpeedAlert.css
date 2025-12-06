@@ -1,0 +1,52 @@
+.speed-alert {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  padding: 15px;
+  background: rgba(244, 67, 54, 0.2);
+  border-left: 4px solid #f44336;
+  border-radius: 8px;
+  animation: slideIn 0.3s ease-out;
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateX(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.alert-icon {
+  font-size: 2rem;
+}
+
+.alert-content {
+  flex: 1;
+}
+
+.alert-message {
+  font-weight: bold;
+  margin-bottom: 5px;
+  color: #fff;
+}
+
+.alert-details {
+  display: flex;
+  gap: 15px;
+  font-size: 0.9rem;
+  opacity: 0.9;
+}
+
+.alert-speed {
+  font-weight: bold;
+}
+
+.alert-time {
+  opacity: 0.8;
+}
+
+
