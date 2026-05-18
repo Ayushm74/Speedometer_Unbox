@@ -1,7 +1,6 @@
 # Speedometer - Real-Time Speed Monitoring Application
 
 A full-stack application that records time-series speed data every second, stores it in a PostgreSQL database, and displays real-time speed updates on a React UI using WebSockets.
-
 ## Features
 \
 - **Real-Time Speed Monitoring**: Updates every second via WebSocket connection
