@@ -6,7 +6,7 @@ A full-stack application that records time-series speed data every second, store
 - **Real-Time Speed Monitoring**: Updates every second via WebSocket 
 - **Data Persistence**: Stores all speed data in PostgreSQL database
 - **Beautiful UI**: Modern, responsive speedometer gauge with historical charts
-- **Speed Alerts**: Configurable threshold alerts for speed violation
+- **Speed Alerts**: Configurable threshold alerts for speed violatin
 - **Statistics Dashboard**: Min, max, average speed and total record count
 - **Dockerized**: Complete Docker Compose setup for easy deployment
 - **RESTful API**: Comprehensive API endpoints for speed data operations
